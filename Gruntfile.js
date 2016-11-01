@@ -1,36 +1,51 @@
 module.exports = function(grunt) {
 
-    "use strict";
-    
-    grunt.initConfig({
+	"use strict";
 
-	pkg: grunt.file.readJSON('package.json'),
+	grunt.loadNpmTasks('grunt-string-replace');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-jasmine');
 
-	'string-replace': {
-	    dist: {
-		options: {
-		    replacements: [
-			{pattern: /{{VERSION}}/g, replacement: '<%= pkg.version %>'}
-		    ]
+	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
+
+		'string-replace': {
+			dist: {
+				options: {
+					replacements: [
+						{
+							pattern: /{{VERSION}}/g,
+							replacement: '<%= pkg.version %>'
+						}
+					]
+				},
+				files: {
+				'dist/eventsource.js': ['javascript/src/eventsource.js'],
+				'dist/browserify-eventsource.js': ['javascript/src/browserify-eventsource.js']
+				}
+			}
 		},
-		files: {
-		    'dist/eventsource.js': ['javascript/src/eventsource.js'],
-		    'dist/browserify-eventsource.js': ['javascript/src/browserify-eventsource.js']
-		}
-	    }
-	},
 
-	uglify: {
-	    dist: {
-		files: {
-		    'dist/eventsource.min.js': ['dist/eventsource.js']
-		}
-	    }
-	},
+		uglify: {
+			dist: {
+				files: {
+					'dist/eventsource.min.js': ['dist/eventsource.js']
+				}
+			}
+		},
 
-	
-    });
-    grunt.loadNpmTasks('grunt-string-replace');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask('default', ['string-replace', 'uglify']);
+		jasmine: {
+			src: "dist/eventsource.js",
+			options: {
+				specs: [
+					"specs/*-spec.js",
+				],
+				helpers: [
+					"specs/helpers/*.js",
+				]
+			}
+		},
+	});
+
+	grunt.registerTask('default', ['string-replace', 'uglify']);
 };
